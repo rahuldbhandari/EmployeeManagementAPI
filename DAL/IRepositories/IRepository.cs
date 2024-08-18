@@ -2,9 +2,9 @@
 
 namespace EmployeeManagementAPI.DAL.IRepositories
 {
-    public interface Repository<T> where T : class
+    public interface IRepository<T> where T : class
     {
-        Task<List<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null);
+        Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null);
 
         Task<T> GetFirstAsync(Expression<Func<T, bool>>? filter = null);
 

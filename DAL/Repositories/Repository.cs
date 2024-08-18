@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace EmployeeManagementAPI.DAL.Repositories
 {
-    public class Repository<T, Tcontext> : Repository<T> where T : class where Tcontext : DbContext
+    public class Repository<T, Tcontext> : IRepository<T> where T : class where Tcontext : DbContext
     {
         private readonly Tcontext _dbContext;
         internal DbSet<T> dbSet;
@@ -20,9 +20,9 @@ namespace EmployeeManagementAPI.DAL.Repositories
             return true;
         }
 
-        public async Task<List<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null)
+        public async Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null)
         {
-            IQueryable<T> query = dbSet;
+            IQueryable<T> query = dbSet.Take(100);
             return await ((filter != null) ? query.Where(filter) : query).ToListAsync();
         }
 

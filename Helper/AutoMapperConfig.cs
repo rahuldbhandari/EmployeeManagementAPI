@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using EmployeeManagementAPI.DAL.DTOs;
+using EmployeeManagementAPI.DAL.Entities;
 
 namespace EmployeeManagementAPI.Helper
 {
@@ -6,7 +8,8 @@ namespace EmployeeManagementAPI.Helper
     {
         public AutoMapperConfig()
         {
-
+            CreateMap<Employee, EmployeeCreateDTO>().ReverseMap();
+            CreateMap<Employee, EmployeeFetchDTO>().ReverseMap();
         }
     }
 }

@@ -18,8 +18,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="BAL\IServices\" />
-    <Folder Include="Controllers\" />
     <Folder Include="DAL\DBContext\" />
     <Folder Include="DAL\Entities\" />
   </ItemGroup>
