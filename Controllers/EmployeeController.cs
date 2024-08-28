@@ -2,6 +2,7 @@
 using EmployeeManagementAPI.DAL.DTOs;
 using EmployeeManagementAPI.Helper;
 using EmployeeManagementAPI.Models;
+using EmployeeManagementAPI.Models.Query;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -37,14 +38,14 @@ namespace EmployeeManagementAPI.Controllers
             }
             return res;
         }
-        
-        [HttpGet("v1/Get")]
-        public async Task<ResponseModel<IEnumerable<EmployeeFetchDTO>>> Get()
+        //public async Task<PagedResponse<IEnumerable<EmployeeFetchDTO>>> fetchService(PaginationQuery? paginationQuery = null,)
+        [HttpPatch("v1/Get")]
+        public async Task<ResponseModel<PagedResponse<IEnumerable<EmployeeFetchDTO>>>> Get(DynamicQuery? dynamicQuery = null)
         {
-            ResponseModel<IEnumerable<EmployeeFetchDTO>> res = new ResponseModel<IEnumerable<EmployeeFetchDTO>>();
+            ResponseModel<PagedResponse<IEnumerable<EmployeeFetchDTO>>> res = new ResponseModel<PagedResponse<IEnumerable<EmployeeFetchDTO>>>();
             try
             {
-                res.Result = await _employeeService.fetchService();
+                res.Result = await _employeeService.fetchService(paginationQuery: dynamicQuery.paginationQueries, dynamicFilters: dynamicQuery.filterQueries);
                 res.StatusCode = HttpStatusCode.Found;
             }
             catch (Exception ex)
@@ -54,6 +55,5 @@ namespace EmployeeManagementAPI.Controllers
             }
             return res;
         }
-
     }
 }

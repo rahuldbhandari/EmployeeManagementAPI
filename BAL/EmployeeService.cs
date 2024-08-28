@@ -3,6 +3,8 @@ using EmployeeManagementAPI.BAL.IServices;
 using EmployeeManagementAPI.DAL.DTOs;
 using EmployeeManagementAPI.DAL.Entities;
 using EmployeeManagementAPI.DAL.IRepositories;
+using EmployeeManagementAPI.Models;
+using EmployeeManagementAPI.Models.Query;
 
 namespace EmployeeManagementAPI.BAL
 {
@@ -23,13 +25,17 @@ namespace EmployeeManagementAPI.BAL
             await _employeeRepo.AddAsync(newEmployee);
             await _employeeRepo.SaveChangesAsync();
             return newEmployee.EmpNo;
-        } 
-        
-        public async Task<IEnumerable<EmployeeFetchDTO>> fetchService()
-        {
-            IEnumerable<Employee> employees = await _employeeRepo.GetAllAsync();
+        }
 
-            return  _mapper.Map<IEnumerable<EmployeeFetchDTO>>(employees);
+        public async Task<PagedResponse<IEnumerable<EmployeeFetchDTO>>> fetchService(PaginationQuery? paginationQuery = null, List<FilterQuery>? dynamicFilters = null)
+        {
+            PagedResponse<IEnumerable<Employee>> data = await _employeeRepo.GetAllAsync(paginationQuery: paginationQuery, dynamicFilters: dynamicFilters);
+
+            IEnumerable<EmployeeFetchDTO> employeeDtos = _mapper.Map<IEnumerable<EmployeeFetchDTO>>(data.Data);
+
+            var pagedResponse = new PagedResponse<IEnumerable<EmployeeFetchDTO>>(employeeDtos, data.PageNumber, data.PageSize, data.TotalRecords);
+
+            return pagedResponse;
         }
     }
 }
