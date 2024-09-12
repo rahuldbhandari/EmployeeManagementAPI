@@ -45,7 +45,7 @@ namespace EmployeeManagementAPI.Controllers
             ResponseModel<PagedResponse<IEnumerable<EmployeeFetchDTO>>> res = new ResponseModel<PagedResponse<IEnumerable<EmployeeFetchDTO>>>();
             try
             {
-                res.Result = await _employeeService.fetchService(paginationQuery: dynamicQuery.paginationQueries, dynamicFilters: dynamicQuery.filterQueries);
+                res.Result = await _employeeService.fetchService(dynamicQuery);
                 res.StatusCode = HttpStatusCode.Found;
             }
             catch (Exception ex)

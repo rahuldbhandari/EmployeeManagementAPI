@@ -5,9 +5,9 @@ namespace EmployeeManagementAPI.Helper
 {
     public class ExpressionHelper
     {
-        public static Expression<Func<T, bool>> GetFilterExpression<T>(string field, dynamic value, string op)
+        public static Expression<Func<Entity, bool>> GetFilterExpression<Entity>(string field, dynamic value, string op)
         {
-            var parameter = Expression.Parameter(typeof(T), "x");
+            var parameter = Expression.Parameter(typeof(Entity), "x");
             Expression propertyAccess;
 
             if (field.Contains('.'))
@@ -16,7 +16,7 @@ namespace EmployeeManagementAPI.Helper
             }
             else
             {
-                propertyAccess = GetPropertyAccess<T>(parameter, field);
+                propertyAccess = GetPropertyAccess<Entity>(parameter, field);
             }
 
             var convertedValue = Expression.Constant(Convert.ChangeType(value, propertyAccess.Type));
@@ -53,7 +53,7 @@ namespace EmployeeManagementAPI.Helper
                     throw new ArgumentException("Invalid operator.");
             }
 
-            return Expression.Lambda<Func<T, bool>>(predicate, parameter);
+            return Expression.Lambda<Func<Entity, bool>>(predicate, parameter);
         }
         private static Expression GetNestedPropertyAccess(ParameterExpression parameter, string field)
         {
@@ -74,12 +74,14 @@ namespace EmployeeManagementAPI.Helper
             return propertyAccess;
         }
 
-        private static Expression GetPropertyAccess<T>(ParameterExpression parameter, string field)
+        private static Expression GetPropertyAccess<Entity>(ParameterExpression parameter, string field)
         {
-            PropertyInfo property = typeof(T).GetProperty(field);
+            PropertyInfo? property = typeof(Entity).GetProperty(field);
+            //PropertyInfo property = Expression.Property(parameter, field);
+
             if (property == null)
             {
-                throw new ArgumentException($"Property '{field}' not found on type '{typeof(T)}'.");
+                throw new ArgumentException($"Property '{field}' not found on type '{typeof(Entity)}'.");
             }
 
             return Expression.Property(parameter, property);

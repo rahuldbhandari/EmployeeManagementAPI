@@ -6,7 +6,7 @@ namespace EmployeeManagementAPI.DAL.IRepositories
 {
     public interface IRepository<T> where T : class
     {
-        public Task<PagedResponse<IEnumerable<T>>> GetAllAsync(PaginationQuery paginationQuery, Expression<Func<T, bool>>? filter = null, List<FilterQuery> dynamicFilters = null);
+        public Task<PagedResponse<IEnumerable<T>>> GetAllAsync(DynamicQuery dynamicQuery = null);
 
         Task<T> GetFirstAsync(Expression<Func<T, bool>>? filter = null);
 

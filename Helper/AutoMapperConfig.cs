@@ -9,7 +9,14 @@ namespace EmployeeManagementAPI.Helper
         public AutoMapperConfig()
         {
             CreateMap<Employee, EmployeeCreateDTO>().ReverseMap();
-            CreateMap<Employee, EmployeeFetchDTO>().ReverseMap();
+
+
+            CreateMap<Employee, EmployeeFetchDTO>()
+            /*.ForMember(src => src.ProthomNaam, action => action.MapFrom(dst => dst.FirstName))
+            .ForMember(src => src.SeshNaam, action => action.MapFrom(dst => dst.LastName))
+            .ForMember(src => src.JonmoTarikh, action => action.MapFrom(dst => dst.BirthDate))
+            .ForMember(src => src.Lingo, action => action.MapFrom(dst => dst.Gender))*/
+            .ReverseMap();
         }
     }
 }

@@ -23,25 +23,39 @@ namespace EmployeeManagementAPI.DAL.Repositories
             return true;
         }
 
-        public async Task<PagedResponse<IEnumerable<T>>> GetAllAsync(PaginationQuery paginationQuery, Expression<Func<T, bool>>? filter = null, List<FilterQuery>? dynamicFilters = null)
+        public async Task<PagedResponse<IEnumerable<T>>> GetAllAsync(DynamicQuery dynamicQuery = null)
         {
-            var skip = ((paginationQuery.PageNumber - 1)  * paginationQuery.PageSize);
+            var skip = ((dynamicQuery.PageIndex)  * dynamicQuery.PageSize);
             IQueryable<T> query = dbSet;
 
 
-            if (dynamicFilters != null)
+            if (dynamicQuery.filterQueries != null)
             {
-                if (dynamicFilters != null && dynamicFilters.Any())
+                if (dynamicQuery.filterQueries != null && dynamicQuery.filterQueries.Any())
                 {
-                    foreach (var filters in dynamicFilters)
+                    foreach (var filters in dynamicQuery.filterQueries)
                     {
                         var dynimicFilterExpression = ExpressionHelper.GetFilterExpression<T>(filters.Field, filters.Value, filters.Operator);
                         query = query.Where(dynimicFilterExpression);
                     }
                 }
             }
-            IEnumerable<T> data = await ((filter != null) ? query.Where(filter) : query).Skip(skip).Take(paginationQuery.PageSize).ToListAsync();
-            return new PagedResponse<IEnumerable<T>>(data, paginationQuery.PageNumber, paginationQuery.PageSize, dbSet.CountAsync().Result);
+
+            // Add Dynamic Sort Parameters
+            string? orderByField = dynamicQuery?.sortParameters?.Field;
+            string? orderByOrder = dynamicQuery?.sortParameters?.Order;
+            if (!string.IsNullOrWhiteSpace(orderByField))
+            {
+                var parameter = Expression.Parameter(typeof(T), "x");
+                var property = Expression.Property(parameter, orderByField);
+                var lambda = Expression.Lambda<Func<T, object>>(Expression.Convert(property, typeof(object)), parameter);
+                query = (orderByOrder == "ASC") ? query.OrderBy(lambda) : query.OrderByDescending(lambda);
+            }
+
+
+
+            IEnumerable<T> data = await query.Skip(skip).Take(dynamicQuery.PageSize).ToListAsync();
+            return new PagedResponse<IEnumerable<T>>(data, dynamicQuery.PageIndex, dynamicQuery.PageSize, dbSet.CountAsync().Result);
         }
         /*public async Task<IEnumerable<T>> GetAllAsync(PaginationQuery paginationQuery, Expression<Func<T, bool>>? filter = null)
         {

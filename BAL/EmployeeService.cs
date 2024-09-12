@@ -27,9 +27,9 @@ namespace EmployeeManagementAPI.BAL
             return newEmployee.EmpNo;
         }
 
-        public async Task<PagedResponse<IEnumerable<EmployeeFetchDTO>>> fetchService(PaginationQuery? paginationQuery = null, List<FilterQuery>? dynamicFilters = null)
+        public async Task<PagedResponse<IEnumerable<EmployeeFetchDTO>>> fetchService(DynamicQuery dynamicQuery = null)
         {
-            PagedResponse<IEnumerable<Employee>> data = await _employeeRepo.GetAllAsync(paginationQuery: paginationQuery, dynamicFilters: dynamicFilters);
+            PagedResponse<IEnumerable<Employee>> data = await _employeeRepo.GetAllAsync(dynamicQuery);
 
             IEnumerable<EmployeeFetchDTO> employeeDtos = _mapper.Map<IEnumerable<EmployeeFetchDTO>>(data.Data);
 
