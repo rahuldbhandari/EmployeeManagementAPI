@@ -1,14 +1,14 @@
 ﻿namespace EmployeeManagementAPI.Models
 {
-    public class PagedResponse<T>
+    public class PagedResponse<Entity>
     {
-        public PagedResponse(T data, int pageNumber, int pageSize, int totalRecords) {
+        public PagedResponse(Entity data, int pageNumber, int pageSize, int totalRecords) {
             Data = data;
             PageNumber = pageNumber;
             PageSize = pageSize;
             TotalRecords = totalRecords;
         }
-        public T Data { get; set; }
+        public Entity Data { get; set; }
 
         public int PageNumber { get; set; }
         public int PageSize { get; set; }

@@ -1,6 +1,6 @@
 ﻿namespace EmployeeManagementAPI.Models.Query
 {
-    public class DynamicQuery
+    public class DynamicListQueryModel
     {
         public int PageSize { get; set; } = 10;
         public int PageIndex { get; set; } = 1;
@@ -9,17 +9,16 @@
 
         public SortParameter? sortParameters { get; set; }
     }
-
     public class FilterQuery
     {
-        public string? Field { get; set; }
-        public string? Value { get; set; }
-        public string? Operator { get; set; }
+        public string Field { get; set; }
+        public string Value { get; set; }
+        public string Operator { get; set; }
     }
 
     public class SortParameter
     {
-        public string? Field { get; set; } = "";
-        public string? Order { get; set; } = "ASC";
+        public string Field { get; set; } = "";
+        public string Order { get; set; } = "DESC";
     }
 }

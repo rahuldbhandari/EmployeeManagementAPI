@@ -3,70 +3,43 @@ using EmployeeManagementAPI.Helper;
 using EmployeeManagementAPI.Models;
 using EmployeeManagementAPI.Models.Query;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using System.Linq.Expressions;
 
 namespace EmployeeManagementAPI.DAL.Repositories
 {
-    public class Repository<T, Tcontext> : IRepository<T> where T : class where Tcontext : DbContext
+    public class Repository<Entity, Tcontext> : IRepository<Entity> where Entity : class where Tcontext : DbContext
     {
         private readonly Tcontext _dbContext;
-        internal DbSet<T> dbSet;
+        internal DbSet<Entity> dbSet;
         public Repository(Tcontext dbContext)
         {
             _dbContext = dbContext;
-            this.dbSet = _dbContext.Set<T>();
+            this.dbSet = _dbContext.Set<Entity>();
         }
 
-        public async Task<bool> AddAsync(T entity)
+        public async Task<bool> AddAsync(Entity entity)
         {
             await dbSet.AddAsync(entity);
             return true;
         }
 
-        public async Task<PagedResponse<IEnumerable<T>>> GetAllAsync(DynamicQuery dynamicQuery = null)
+        public async Task<PagedResponse<IEnumerable<DTO>>> GetAllAsync<DTO>(Expression<Func<Entity, bool>>? filterExpression, Expression<Func<Entity, DTO>> selectExpression, DynamicListQueryModel dynamicQuery)
         {
-            var skip = ((dynamicQuery.PageIndex)  * dynamicQuery.PageSize);
-            IQueryable<T> query = dbSet;
+            IQueryable<Entity> query = dbSet;
 
+            query = filterExpression != null ? query.Where(filterExpression) : query;
+            query = DynamicQueryHelper<Entity>.FilterQueryResolver(query, dynamicQuery.filterQueries);
+            query = DynamicQueryHelper<Entity>.SortQueryResolver(query, dynamicQuery.sortParameters);
+            var final_query = DynamicQueryHelper<Entity>.PaginationQueryResolver(query, dynamicQuery.PageIndex, dynamicQuery.PageSize);
 
-            if (dynamicQuery.filterQueries != null)
-            {
-                if (dynamicQuery.filterQueries != null && dynamicQuery.filterQueries.Any())
-                {
-                    foreach (var filters in dynamicQuery.filterQueries)
-                    {
-                        var dynimicFilterExpression = ExpressionHelper.GetFilterExpression<T>(filters.Field, filters.Value, filters.Operator);
-                        query = query.Where(dynimicFilterExpression);
-                    }
-                }
-            }
-
-            // Add Dynamic Sort Parameters
-            string? orderByField = dynamicQuery?.sortParameters?.Field;
-            string? orderByOrder = dynamicQuery?.sortParameters?.Order;
-            if (!string.IsNullOrWhiteSpace(orderByField))
-            {
-                var parameter = Expression.Parameter(typeof(T), "x");
-                var property = Expression.Property(parameter, orderByField);
-                var lambda = Expression.Lambda<Func<T, object>>(Expression.Convert(property, typeof(object)), parameter);
-                query = (orderByOrder == "ASC") ? query.OrderBy(lambda) : query.OrderByDescending(lambda);
-            }
-
-
-
-            IEnumerable<T> data = await query.Skip(skip).Take(dynamicQuery.PageSize).ToListAsync();
-            return new PagedResponse<IEnumerable<T>>(data, dynamicQuery.PageIndex, dynamicQuery.PageSize, dbSet.CountAsync().Result);
+            IEnumerable<DTO> data = await final_query.Select(selectExpression).ToListAsync();
+            return new PagedResponse<IEnumerable<DTO>>(data, dynamicQuery.PageIndex, dynamicQuery.PageSize, query.CountAsync().Result);
         }
-        /*public async Task<IEnumerable<T>> GetAllAsync(PaginationQuery paginationQuery, Expression<Func<T, bool>>? filter = null)
-        {
-            var skip = ((paginationQuery.PageNumber - 1) * paginationQuery.PageSize);
-            IQueryable<T> query = dbSet;
-            return await ((filter != null) ? query.Where(filter) : query).Skip(skip).Take(paginationQuery.PageSize).ToListAsync();
-        }*/
 
-        public async Task<T> GetFirstAsync(Expression<Func<T, bool>>? filter = null)
+        public async Task<Entity> GetFirstAsync(Expression<Func<Entity, bool>>? filter = null)
         {
-            IQueryable<T> query = dbSet;
+            IQueryable<Entity> query = dbSet;
             return await ((filter != null) ? query.Where(filter) : query).FirstAsync();  
         }
 

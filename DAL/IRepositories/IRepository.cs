@@ -4,13 +4,13 @@ using System.Linq.Expressions;
 
 namespace EmployeeManagementAPI.DAL.IRepositories
 {
-    public interface IRepository<T> where T : class
+    public interface IRepository<Entity> where Entity : class
     {
-        public Task<PagedResponse<IEnumerable<T>>> GetAllAsync(DynamicQuery dynamicQuery = null);
+        public Task<PagedResponse<IEnumerable<DTO>>> GetAllAsync<DTO>(Expression<Func<Entity, bool>>? filterExpression, Expression<Func<Entity, DTO>> selectExpression, DynamicListQueryModel dynamicQuery);
 
-        Task<T> GetFirstAsync(Expression<Func<T, bool>>? filter = null);
+        Task<Entity> GetFirstAsync(Expression<Func<Entity, bool>>? filter = null);
 
-        Task<bool> AddAsync(T entity);
+        Task<bool> AddAsync(Entity entity);
 
         Task<int> SaveChangesAsync();
     }

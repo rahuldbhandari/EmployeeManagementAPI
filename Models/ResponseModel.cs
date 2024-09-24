@@ -2,9 +2,9 @@
 
 namespace EmployeeManagementAPI.Models
 {
-    public class ResponseModel<T>
+    public class ResponseModel<Entity>
     {
-        public T? Result { get; set; }
+        public Entity? Result { get; set; }
         public HttpStatusCode? StatusCode { get; set; } = HttpStatusCode.InternalServerError;
         public string? Message { get; set; }
     }

@@ -39,13 +39,13 @@ namespace EmployeeManagementAPI.Controllers
             return res;
         }
         //public async Task<PagedResponse<IEnumerable<EmployeeFetchDTO>>> fetchService(PaginationQuery? paginationQuery = null,)
-        [HttpPatch("v1/Get")]
-        public async Task<ResponseModel<PagedResponse<IEnumerable<EmployeeFetchDTO>>>> Get(DynamicQuery? dynamicQuery = null)
+        [HttpPost("v1/GetAll")]
+        public async Task<ResponseModel<PagedResponse<IEnumerable<EmployeeFetchDTO>>>> Get([FromQuery]string deptno, [FromBody]DynamicListQueryModel? dynamicQuery = null)
         {
             ResponseModel<PagedResponse<IEnumerable<EmployeeFetchDTO>>> res = new ResponseModel<PagedResponse<IEnumerable<EmployeeFetchDTO>>>();
             try
             {
-                res.Result = await _employeeService.fetchService(dynamicQuery);
+                res.Result = await _employeeService.GetAll(deptno, dynamicQuery);
                 res.StatusCode = HttpStatusCode.Found;
             }
             catch (Exception ex)
