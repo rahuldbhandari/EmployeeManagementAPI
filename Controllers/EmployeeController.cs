@@ -40,7 +40,7 @@ namespace EmployeeManagementAPI.Controllers
         }
         //public async Task<PagedResponse<IEnumerable<EmployeeFetchDTO>>> fetchService(PaginationQuery? paginationQuery = null,)
         [HttpPost("v1/GetAll")]
-        public async Task<ResponseModel<PagedResponse<IEnumerable<EmployeeFetchDTO>>>> Get([FromQuery]string deptno, [FromBody]DynamicListQueryModel? dynamicQuery = null)
+        public async Task<ResponseModel<PagedResponse<IEnumerable<EmployeeFetchDTO>>>> Get([FromQuery]string? deptno, [FromBody]DynamicListQueryModel? dynamicQuery)
         {
             ResponseModel<PagedResponse<IEnumerable<EmployeeFetchDTO>>> res = new ResponseModel<PagedResponse<IEnumerable<EmployeeFetchDTO>>>();
             try

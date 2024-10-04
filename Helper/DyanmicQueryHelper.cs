@@ -47,9 +47,9 @@ namespace EmployeeManagementAPI.Helper
             return query;
         }
 
-        public static IQueryable<T> PaginationQueryResolver(IQueryable<T> query, int PageIndex, int PageSize)
+        public static IQueryable<T> PaginationQueryResolver(IQueryable<T> query, int offset, int size)
         {
-            return query.Skip((PageIndex)).Take(PageSize);
+            return query.Skip((offset)).Take(size);
         }
     }
 }

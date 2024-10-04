@@ -22,7 +22,7 @@ namespace EmployeeManagementAPI.DAL.Repositories
         {
             var query = (from emp in _dbContext.Employees
                          join demp in _dbContext.DeptEmps on emp.EmpNo equals demp.EmpNo
-                         join dept in _dbContext.Departments on demp.DeptNo equals dept.DeptNo
+                         join dept in _dbContext.Departments on demp.DeptNo equals dept.DeptNo where dept.DeptNo == deptno
                          select new EmployeeFetchDTO
                          {
                              empno = emp.EmpNo,
